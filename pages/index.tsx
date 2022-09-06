@@ -1,20 +1,33 @@
 import type { NextPage } from 'next';
 
-type Row = {
+type Node = {
+  id: number;
   content: string;
-  children: Row[];
+  children: Node[];
 };
 
 const Home: NextPage = () => {
-  const wasd: string = 'wasd';
+  function countNodes(nodes: Node[]): number {
+    if (nodes === null || nodes === undefined || nodes.length === 0) return 0;
 
-  const roots: Row[] = [
+    let count = nodes.length;
+
+    nodes.forEach((child: Node) => {
+      count += countNodes(child.children);
+    });
+
+    return count;
+  }
+
+  const nodes: Node[] = [
     {
+      id: 1,
       content: 'root',
       children: [
         {
+          id: 2,
           content: 'child1',
-          children: [{ content: 'grandchild1', children: [] }],
+          children: [{ id: 3, content: 'grandchild1', children: [] }],
         },
       ],
     },
@@ -26,23 +39,35 @@ const Home: NextPage = () => {
 
       <p className="mt-5 mb-5">sample</p>
 
-      {roots.map((row, index) => {
+      {nodes.map((node, index) => {
         const x = 'test';
 
-        function subtree(tree: Row): any {
+        function subtree(innerNode: Node, level: number): any {
           return (
-            <div>
-              <p>{tree?.content}</p>
+            <div key={`tree${innerNode.id}`}>
+              <p style={{ marginLeft: `${level * 10}px` }}>
+                {innerNode?.content}
+              </p>
 
-              {tree.children.map((child) => {
-                return subtree(child);
+              {innerNode.children.map((child) => {
+                return subtree(child, level + 1);
               })}
             </div>
           );
         }
 
-        return subtree(row);
+        return subtree(node, 0);
       })}
+
+      <div className="columns">
+        <div className="column is-3 is-6-desktop">
+          <div className="card m-5" style={{ borderColor: 'red !important' }}>
+            <p className="title">dev info</p>
+
+            <p>Total: {countNodes(nodes)}</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
