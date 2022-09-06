@@ -1,12 +1,16 @@
 import type { NextPage } from 'next';
+import { useState } from 'react';
 
 type Node = {
   id: number;
   content: string;
+  checked: boolean;
   children: Node[];
 };
 
 const Home: NextPage = () => {
+  const [nodes, setNodes] = useState(sample());
+
   function countNodes(nodes: Node[]): number {
     if (nodes === null || nodes === undefined || nodes.length === 0) return 0;
 
@@ -19,27 +23,37 @@ const Home: NextPage = () => {
     return count;
   }
 
-  const nodes: Node[] = [
-    {
-      id: 1,
-      content: 'root',
-      children: [
-        {
-          id: 2,
-          content: 'child1',
-          children: [{ id: 3, content: 'grandchild1', children: [] }],
-        },
-        ,
-        { id: 4, content: 'child2', children: [] },
-      ],
-    },
-  ];
+  function toggleCheck(node: Node): void {
+    if (!node) return;
+
+    node.checked = !node.checked;
+    setNodes(nodes.map((n) => n)); // TODO: this is a hack to force a re-render
+  }
+
+  function sample(): Node[] {
+    return [
+      {
+        id: 1,
+        content: 'root',
+        checked: false,
+        children: [
+          {
+            id: 2,
+            content: 'child1',
+            checked: false,
+            children: [
+              { id: 3, content: 'grandchild1', checked: false, children: [] },
+            ],
+          },
+          { id: 4, content: 'child2', checked: true, children: [] },
+        ],
+      },
+    ];
+  }
 
   return (
     <div className="container mt-5">
       <h1 className="is-size-1 has-text-weight-bold">carabiner</h1>
-
-      <p className="mt-5 mb-5">sample</p>
 
       {nodes.map((node) => {
         const x = 'test';
@@ -48,7 +62,13 @@ const Home: NextPage = () => {
           return (
             <div key={`tree${innerNode.id}`}>
               <p style={{ marginLeft: `${level * 30}px` }}>
-                {innerNode?.content}
+                {innerNode?.content} {innerNode?.checked ? '✅' : ''}
+                <button
+                  className="button is-text is-small ml-2"
+                  onClick={() => toggleCheck(innerNode)}
+                >
+                  {innerNode?.checked ? 'Uncheck' : 'Check'}
+                </button>
               </p>
 
               {innerNode.children.map((child) => {
@@ -62,7 +82,7 @@ const Home: NextPage = () => {
       })}
 
       <div className="columns mt-5">
-        <div className="column is-3 is-6-desktop">
+        <div className="column is-6">
           <div
             style={{
               borderColor: '#03fc90',
@@ -70,10 +90,18 @@ const Home: NextPage = () => {
               borderRadius: '10px',
             }}
           >
-            <div className="m-2">
+            <div className="m-5">
               <p className="title">dev info</p>
 
-              <p>Total: {countNodes(nodes)}</p>
+              <p>
+                <b>Total:</b> {countNodes(nodes)}
+              </p>
+
+              <p>
+                <b>JSON Object:</b>
+              </p>
+
+              <pre>{JSON.stringify(nodes, null, 2)}</pre>
             </div>
           </div>
         </div>
