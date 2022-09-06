@@ -29,6 +29,8 @@ const Home: NextPage = () => {
           content: 'child1',
           children: [{ id: 3, content: 'grandchild1', children: [] }],
         },
+        ,
+        { id: 4, content: 'child2', children: [] },
       ],
     },
   ];
@@ -39,13 +41,13 @@ const Home: NextPage = () => {
 
       <p className="mt-5 mb-5">sample</p>
 
-      {nodes.map((node, index) => {
+      {nodes.map((node) => {
         const x = 'test';
 
         function subtree(innerNode: Node, level: number): any {
           return (
             <div key={`tree${innerNode.id}`}>
-              <p style={{ marginLeft: `${level * 10}px` }}>
+              <p style={{ marginLeft: `${level * 30}px` }}>
                 {innerNode?.content}
               </p>
 
@@ -59,12 +61,20 @@ const Home: NextPage = () => {
         return subtree(node, 0);
       })}
 
-      <div className="columns">
+      <div className="columns mt-5">
         <div className="column is-3 is-6-desktop">
-          <div className="card m-5" style={{ borderColor: 'red !important' }}>
-            <p className="title">dev info</p>
+          <div
+            style={{
+              borderColor: '#03fc90',
+              borderStyle: 'solid',
+              borderRadius: '10px',
+            }}
+          >
+            <div className="m-2">
+              <p className="title">dev info</p>
 
-            <p>Total: {countNodes(nodes)}</p>
+              <p>Total: {countNodes(nodes)}</p>
+            </div>
           </div>
         </div>
       </div>
