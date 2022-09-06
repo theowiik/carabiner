@@ -1,4 +1,4 @@
-import type { NextPage } from 'next'
+import type { NextPage } from 'next';
 
 const Home: NextPage = () => {
   return (
@@ -6,7 +6,7 @@ const Home: NextPage = () => {
       <h1>carabiner</h1>
       <p>Some text</p>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
