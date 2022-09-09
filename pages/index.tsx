@@ -1,38 +1,54 @@
 import type { NextPage } from 'next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import {
+  IBulletPointService,
+  LocalStorageRepository,
+} from '../services/bullet-point-service';
 
-type Node = {
+export type NodeX = {
   id: number;
   content: string;
   checked: boolean;
   expanded: boolean;
-  children: Node[];
+  children: NodeX[];
 };
 
 const Home: NextPage = () => {
   const [nodes, setNodes] = useState(createSampleNodes());
-  const [root, setRoot] = useState<Node | null>(null);
+  const [root, setRoot] = useState<NodeX | null>(null);
+  const repo: IBulletPointService = new LocalStorageRepository();
 
-  function countNodes(nodes: Node[]): number {
+  useEffect(() => {
+    repo.get().then((data) => {
+      console.log('go', data);
+    });
+  }, []);
+
+  function save(): void {
+    const temp: NodeX[] = nodes;
+    repo.save(temp);
+  }
+
+  function countNodes(nodes: NodeX[]): number {
     if (nodes === null || nodes === undefined || nodes.length === 0) return 0;
 
     let count = nodes.length;
 
-    nodes.forEach((child: Node) => {
+    nodes.forEach((child: NodeX) => {
       count += countNodes(child.children);
     });
 
     return count;
   }
 
-  function toggleCheck(node: Node): void {
+  function toggleCheck(node: NodeX): void {
     if (!node) return;
 
     node.checked = !node.checked;
     forceRerender();
   }
 
-  function toggleExpanded(node: Node): void {
+  function toggleExpanded(node: NodeX): void {
     if (!node) return;
 
     node.expanded = !node.expanded;
@@ -43,7 +59,7 @@ const Home: NextPage = () => {
     setNodes(nodes.map((n) => n)); // TODO: this is a hack to force a re-render
   }
 
-  function createSampleNodes(): Node[] {
+  function createSampleNodes(): NodeX[] {
     return [
       {
         id: 1,
@@ -78,14 +94,14 @@ const Home: NextPage = () => {
     ];
   }
 
-  function toggleFocused(node: Node): void {
+  function toggleFocused(node: NodeX): void {
     if (!node) return;
 
     if (root === node) setRoot(null);
     else setRoot(node);
   }
 
-  function buildTree(innerNode: Node, level: number): any {
+  function buildTree(innerNode: NodeX, level: number): any {
     return (
       <div key={`tree${innerNode.id}`}>
         <p style={{ marginLeft: `${level * 30}px` }}>
@@ -130,11 +146,13 @@ const Home: NextPage = () => {
     <div className="container mt-5">
       <h1 className="is-size-1 has-text-weight-bold">carabiner</h1>
 
+      <p className="mb-5">path here</p>
+
       {root && buildTree(root, 0)}
       {!root && nodes.map((node) => buildTree(node, 0))}
 
       <div className="columns mt-5">
-        <div className="column is-6">
+        <div className="column">
           <div
             style={{
               borderColor: '#03fc90',
@@ -153,11 +171,26 @@ const Home: NextPage = () => {
                 <b>Total:</b> {countNodes(nodes)}
               </p>
 
-              <p>
-                <b>JSON Object:</b>
-              </p>
-
-              <pre>{JSON.stringify(nodes, null, 2)}</pre>
+              <div className="columns">
+                <div className="column">
+                  <p>
+                    <b>Current:</b>{' '}
+                    <button
+                      className="button is-text is-small"
+                      onClick={() => save()}
+                    >
+                      save
+                    </button>
+                  </p>
+                  <pre>{JSON.stringify(nodes, null, 2)}</pre>
+                </div>
+                <div className="column">
+                  <p>
+                    <b>Saved:</b>
+                  </p>
+                  <pre>{JSON.stringify(nodes, null, 2)}</pre>
+                </div>
+              </div>
             </div>
           </div>
         </div>
