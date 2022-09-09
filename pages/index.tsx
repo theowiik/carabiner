@@ -91,7 +91,13 @@ const Home: NextPage = () => {
         <p style={{ marginLeft: `${level * 30}px` }}>
           <span>{innerNode.expanded ? '⬇️' : '➡️'}</span>
           <i>• </i>
-          {innerNode?.content} {innerNode?.checked ? '✅' : ''}
+
+          {innerNode?.checked ? (
+            <s style={{ opacity: '10%' }}>{innerNode.content}</s>
+          ) : (
+            innerNode.content
+          )}
+
           <button
             className="button is-text is-small ml-2"
             onClick={() => toggleCheck(innerNode)}
