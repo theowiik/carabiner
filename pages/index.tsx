@@ -5,12 +5,13 @@ import {
   LocalStorageRepository,
 } from '../services/bullet-point-service';
 
+// TODO: Ensure no cyclic dependencies on changes
 export type NodeX = {
   id: number;
+  parent: number | undefined;
   content: string;
   checked: boolean;
   expanded: boolean;
-  children: NodeX[];
 };
 
 const Home: NextPage = () => {
@@ -31,65 +32,57 @@ const Home: NextPage = () => {
 
   function countNodes(nodes: NodeX[]): number {
     if (nodes === null || nodes === undefined || nodes.length === 0) return 0;
-
-    let count = nodes.length;
-
-    nodes.forEach((child: NodeX) => {
-      count += countNodes(child.children);
-    });
-
-    return count;
+    return nodes.length;
   }
 
   function toggleCheck(node: NodeX): void {
     if (!node) return;
-
-    node.checked = !node.checked;
-    forceRerender();
+    setNodes(
+      nodes.map((n) => (n === node ? { ...n, checked: !n.checked } : n))
+    );
   }
 
   function toggleExpanded(node: NodeX): void {
     if (!node) return;
-
-    node.expanded = !node.expanded;
-    forceRerender();
+    setNodes(
+      nodes.map((n) => (n === node ? { ...n, expanded: !n.expanded } : n))
+    );
   }
 
-  function forceRerender(): void {
-    setNodes(nodes.map((n) => n)); // TODO: this is a hack to force a re-render
+  function getChildren(node: NodeX): NodeX[] {
+    if (!node) return [];
+    return nodes.filter((n: NodeX) => n.parent === node.id);
   }
 
   function createSampleNodes(): NodeX[] {
     return [
       {
         id: 1,
+        parent: undefined,
         content: 'root',
         checked: false,
         expanded: true,
-        children: [
-          {
-            id: 2,
-            content: 'child1',
-            checked: false,
-            expanded: true,
-            children: [
-              {
-                id: 3,
-                content: 'grandchild1',
-                checked: false,
-                expanded: true,
-                children: [],
-              },
-            ],
-          },
-          {
-            id: 4,
-            content: 'child2',
-            checked: true,
-            expanded: true,
-            children: [],
-          },
-        ],
+      },
+      {
+        id: 2,
+        parent: 1,
+        content: 'child1',
+        checked: false,
+        expanded: true,
+      },
+      {
+        id: 3,
+        parent: 2,
+        content: 'grandchild1',
+        checked: false,
+        expanded: true,
+      },
+      {
+        id: 4,
+        parent: 1,
+        content: 'child2',
+        checked: true,
+        expanded: true,
       },
     ];
   }
@@ -135,7 +128,7 @@ const Home: NextPage = () => {
         </p>
 
         {innerNode?.expanded &&
-          innerNode.children.map((child) => {
+          getChildren(innerNode).map((child) => {
             return buildTree(child, level + 1);
           })}
       </div>
@@ -149,7 +142,10 @@ const Home: NextPage = () => {
       <p className="mb-5">path here</p>
 
       {root && buildTree(root, 0)}
-      {!root && nodes.map((node) => buildTree(node, 0))}
+      {!root &&
+        nodes
+          .filter((node) => node.parent === undefined)
+          .map((node) => buildTree(node, 0))}
 
       <div className="columns mt-5">
         <div className="column">
