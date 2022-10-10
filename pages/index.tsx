@@ -105,7 +105,12 @@ const Home: NextPage = () => {
     return (
       <div key={`tree${innerNode.id}`}>
         <p style={{ marginLeft: `${level * 30}px` }}>
-          <span>{innerNode.expanded ? '⮟' : '➤'}</span>
+          <a
+            onClick={() => toggleExpanded(innerNode)}
+            className="is-unselectable"
+          >
+            {innerNode.expanded ? '⮟' : '➤'}
+          </a>
 
           <input
             type="checkbox"
@@ -113,7 +118,7 @@ const Home: NextPage = () => {
             id={`checkbox-node-${innerNode.id}`}
             className="mx-2"
             checked={innerNode.checked}
-            onClick={() => toggleCheck(innerNode)}
+            onChange={() => toggleCheck(innerNode)}
           />
 
           {innerNode?.checked ? (
@@ -122,12 +127,6 @@ const Home: NextPage = () => {
             innerNode.content
           )}
 
-          <button
-            className="button is-text is-small ml-2"
-            onClick={() => toggleExpanded(innerNode)}
-          >
-            {innerNode?.expanded ? 'Fold up' : 'Expand'}
-          </button>
           <button
             className="button is-text is-small ml-2"
             onClick={() => toggleFocused(innerNode)}
