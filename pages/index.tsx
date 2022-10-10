@@ -37,15 +37,15 @@ const Home: NextPage = () => {
 
   function toggleCheck(node: NodeX): void {
     if (!node) return;
-    setNodes(
-      nodes.map((n) => (n === node ? { ...n, checked: !n.checked } : n))
+    setNodes((prevNodes) =>
+      prevNodes.map((n) => (n === node ? { ...n, checked: !n.checked } : n))
     );
   }
 
   function toggleExpanded(node: NodeX): void {
     if (!node) return;
-    setNodes(
-      nodes.map((n) => (n === node ? { ...n, expanded: !n.expanded } : n))
+    setNodes((prevNodes) =>
+      prevNodes.map((n) => (n === node ? { ...n, expanded: !n.expanded } : n))
     );
   }
 
