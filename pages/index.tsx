@@ -101,6 +101,10 @@ const Home: NextPage = () => {
     else setRoot(node);
   }
 
+  function updateContent(node: NodeX, content: string): void {
+    if (!node) return;
+  }
+
   function buildTree(innerNode: NodeX, level: number): any {
     return (
       <div key={`tree${innerNode.id}`}>
@@ -108,11 +112,17 @@ const Home: NextPage = () => {
           <span>{innerNode.expanded ? '⬇️' : '➡️'}</span>
           <i>• </i>
 
-          {innerNode?.checked ? (
+          <input type="text" defaultValue={innerNode.content} onBlur={() => updateContent(innerNode, "up")} />
+
+          <span>ACTUAL VALUE: {innerNode.content}</span>
+
+          {/* {innerNode?.checked ? (
             <s style={{ opacity: '10%' }}>{innerNode.content}</s>
           ) : (
             innerNode.content
-          )}
+          )} */}
+
+          {/* <p onClick={() => toggleEdit(innerNode)}>EDIT</p> */}
 
           <button
             className="button is-text is-small ml-2"
