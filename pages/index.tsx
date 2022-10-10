@@ -31,7 +31,7 @@ const Home: NextPage = () => {
   }
 
   function countNodes(nodes: NodeX[]): number {
-    if (nodes === null || nodes === undefined || nodes.length === 0) return 0;
+    if (!nodes) return 0;
     return nodes.length;
   }
 
