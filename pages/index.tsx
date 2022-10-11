@@ -96,6 +96,12 @@ const Home: NextPage = () => {
 
   function updateContent(node: NodeX, content: string): void {
     if (!node) return;
+
+    setNodes((prevNodes) => {
+      return prevNodes.map((n) =>
+        n === node ? { ...n, content: content } : n
+      );
+    });
   }
 
   function buildTree(innerNode: NodeX, level: number): any {
@@ -118,7 +124,13 @@ const Home: NextPage = () => {
             onChange={() => toggleCheck(innerNode)}
           />
 
-          <input type="text" defaultValue={innerNode.content} onBlur={() => updateContent(innerNode, "up")} />
+          <button onClick={() => console.log('sub')}>save</button>
+
+          <input
+            type="text"
+            defaultValue={innerNode.content}
+            onBlur={() => updateContent(innerNode, event.target.value)}
+          />
 
           <span>ACTUAL VALUE: {innerNode.content}</span>
 
