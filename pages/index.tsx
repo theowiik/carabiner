@@ -1,5 +1,6 @@
 import type { NextPage } from 'next';
 import { useEffect, useState } from 'react';
+import { useSsrLocalStorage } from '../hooks';
 import {
   IBulletPointService,
   LocalStorageRepository,
@@ -15,8 +16,8 @@ export type NodeX = {
 };
 
 const Home: NextPage = () => {
-  const [nodes, setNodes] = useState(createSampleNodes());
-  const [root, setRoot] = useState<NodeX | null>(null);
+  const [nodes, setNodes] = useSsrLocalStorage("nodes", createSampleNodes());
+  const [root, setRoot] = useSsrLocalStorage<NodeX | null>("root", null);
   const repo: IBulletPointService = new LocalStorageRepository();
 
   useEffect(() => {
