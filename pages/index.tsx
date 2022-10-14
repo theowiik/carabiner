@@ -1,10 +1,5 @@
 import type { NextPage } from 'next';
-import { useEffect, useState } from 'react';
 import { useSsrLocalStorage } from '../hooks';
-import {
-  IBulletPointService,
-  LocalStorageRepository,
-} from '../services/bullet-point-service';
 
 // TODO: Ensure no cyclic dependencies on changes
 export type NodeX = {
@@ -18,18 +13,6 @@ export type NodeX = {
 const Home: NextPage = () => {
   const [nodes, setNodes] = useSsrLocalStorage("nodes", createSampleNodes());
   const [root, setRoot] = useSsrLocalStorage<NodeX | null>("root", null);
-  const repo: IBulletPointService = new LocalStorageRepository();
-
-  useEffect(() => {
-    repo.get().then((data) => {
-      console.log('go', data);
-    });
-  }, []);
-
-  function save(): void {
-    const temp: NodeX[] = nodes;
-    repo.save(temp);
-  }
 
   function countNodes(nodes: NodeX[]): number {
     if (!nodes) return 0;
@@ -171,15 +154,6 @@ const Home: NextPage = () => {
 
               <div className="columns">
                 <div className="column">
-                  <p>
-                    <b>Current:</b>{' '}
-                    <button
-                      className="button is-text is-small"
-                      onClick={() => save()}
-                    >
-                      save
-                    </button>
-                  </p>
                   <pre>{JSON.stringify(nodes, null, 2)}</pre>
                 </div>
                 <div className="column">
