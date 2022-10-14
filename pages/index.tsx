@@ -18,6 +18,7 @@ const Home: NextPage = () => {
   const [nodes, setNodes] = useState(createSampleNodes());
   const [root, setRoot] = useState<NodeX | null>(null);
   const repo: IBulletPointService = new LocalStorageRepository();
+  const [editingContent, setEditingContent] = useState<string | null>(null);
 
   useEffect(() => {
     repo.get().then((data) => {
@@ -94,61 +95,71 @@ const Home: NextPage = () => {
     else setRoot(node);
   }
 
-  function updateContent(node: NodeX, content: string): void {
+  function updateContent(node: NodeX): void {
     if (!node) return;
 
-    setNodes((prevNodes) => {
-      return prevNodes.map((n) =>
-        n === node ? { ...n, content: content } : n
-      );
-    });
+    const content = editingContent;
+    if (!content) return;
+
+    setNodes((prevNodes) =>
+      prevNodes.map((n) => (n === node ? { ...n, content: content } : n))
+    );
   }
+
+  function startEditingContent(node: NodeX): void {}
 
   function buildTree(innerNode: NodeX, level: number): any {
     return (
       <div key={`tree${innerNode.id}`}>
-        <p style={{ marginLeft: `${level * 30}px` }}>
-          <a
-            onClick={() => toggleExpanded(innerNode)}
-            className="is-unselectable"
-          >
-            {innerNode.expanded ? '⮟' : '➤'}
-          </a>
+        <div className="columns" style={{ marginLeft: `${level * 30}px` }}>
+          <div className="column">
+            <a
+              onClick={() => toggleExpanded(innerNode)}
+              className="is-unselectable"
+            >
+              {innerNode.expanded ? '⮟' : '➤'}
+            </a>
+          </div>
 
-          <input
-            type="checkbox"
-            name={`checkbox-node-${innerNode.id}`}
-            id={`checkbox-node-${innerNode.id}`}
-            className="mx-2"
-            checked={innerNode.checked}
-            onChange={() => toggleCheck(innerNode)}
-          />
+          <div className="column is-4">
+            <input
+              type="checkbox"
+              name={`checkbox-node-${innerNode.id}`}
+              id={`checkbox-node-${innerNode.id}`}
+              className="mx-2"
+              checked={innerNode.checked}
+              onChange={() => toggleCheck(innerNode)}
+            />
+          </div>
 
-          <button onClick={() => console.log('sub')}>save</button>
+          <div className="column">
+            <button onClick={() => console.log('sub')}>save</button>
 
-          <input
-            type="text"
-            defaultValue={innerNode.content}
-            onBlur={() => updateContent(innerNode, event.target.value)}
-          />
+            <div className="columns">
+              <div className="column is-3">
+                <input
+                  type="text"
+                  className="input is-small"
+                  defaultValue={innerNode.content}
+                  onChange={(e) => setEditingContent(e.target.value)}
+                  // onFocus={() => setEditingContent()}
+                  onBlur={() => updateContent(innerNode)}
+                  onDoubleClick={() => startEditingContent(innerNode)}
+                  disabled={true}
+                />
+              </div>
+            </div>
 
-          <span>ACTUAL VALUE: {innerNode.content}</span>
+            <button
+              className="button is-text is-small ml-2"
+              onClick={() => toggleFocused(innerNode)}
+            >
+              toggle focus
+            </button>
 
-          {/* {innerNode?.checked ? (
-            <s style={{ opacity: '10%' }}>{innerNode.content}</s>
-          ) : (
-            innerNode.content
-          )} */}
-
-          {/* <p onClick={() => toggleEdit(innerNode)}>EDIT</p> */}
-
-          <button
-            className="button is-text is-small ml-2"
-            onClick={() => toggleFocused(innerNode)}
-          >
-            toggle focus
-          </button>
-        </p>
+            <span>({innerNode.content})</span>
+          </div>
+        </div>
 
         {innerNode?.expanded &&
           getChildren(innerNode).map((child) => {
