@@ -11,8 +11,8 @@ export type NodeX = {
 };
 
 const Home: NextPage = () => {
-  const [nodes, setNodes] = useSsrLocalStorage("nodes", createSampleNodes());
-  const [root, setRoot] = useSsrLocalStorage<NodeX | null>("root", null);
+  const [nodes, setNodes] = useSsrLocalStorage('nodes', createSampleNodes());
+  const [root, setRoot] = useSsrLocalStorage<NodeX | null>('root', null);
 
   function countNodes(nodes: NodeX[]): number {
     if (!nodes) return 0;
